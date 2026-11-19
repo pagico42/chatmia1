@@ -1,0 +1,42 @@
+
+name: Compila APK Android
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scarica il repository
+        uses: actions/checkout@v4
+
+      - name: Installa Java 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+
+      - name: Configura Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Installa piattaforma e Build Tools Android
+        run: sdkmanager --install "platforms;android-28" "build-tools;28.0.3"
+
+      - name: Installa Gradle 4.6
+        run: |
+          curl -L https://services.gradle.org/distributions/gradle-4.6-bin.zip -o /tmp/gradle.zip
+          unzip -q /tmp/gradle.zip -d /tmp
+          echo "/tmp/gradle-4.6/bin" >> "$GITHUB_PATH"
+
+      - name: Compila APK debug
+        run: gradle assembleDebug --no-daemon
+
+      - name: Pubblica APK come artefatto scaricabile
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChatLocaleAndroid-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
