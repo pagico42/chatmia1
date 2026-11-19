@@ -20,7 +20,7 @@ jobs:
           java-version: '17'
 
       - name: Configura Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       - name: Installa piattaforma Android
         run: sdkmanager --install "platforms;android-28" "build-tools;28.0.3"
